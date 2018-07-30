@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="postsContent">
+  
+  
+    <insert id="insertPostContent" parameterType="postContentVo">
+  	INSERT
+	INTO BOARD_COMMENT
+  (
+    posts_no,
+    comment_reg,
+    comment_del_yn,
+    comment_content,
+    mem_id,
+    comment_no
+  )
+  VALUES
+  (
+    #{posts_no},
+    sysdate,
+    'false',
+    #{comment_content},
+    #{mem_id},
+    comment_no_seq.nextval
+  )
+  	
+  </insert>
+  
+  <select id="selectComment" parameterType="int" resultType="postContentVo">
+ 	 SELECT * FROM board_comment WHERE posts_no = #{posts_no} order by comment_reg desc
+  
+  </select>
+  
+    
+  <update id="deleteComment" parameterType="int">
+    UPDATE board_comment SET comment_del_yn='true', comment_content='삭제된 댓글입니다.' where comment_no = #{comment_no}
+  </update>
+  
+  
+  
+  
+
+</mapper>

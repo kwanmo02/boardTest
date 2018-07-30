@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attachment">
+  
+  
+  <insert id="insertAttachment" parameterType="attachmentVo">
+  INSERT
+	INTO ATTACHMENTS
+	(
+	    ID,
+	    POSTS_NO,
+	    POSTS_PICNAME,
+	    PIC_PATH,
+	    UPLOAD_PICNAME)
+	VALUES(
+	    attachment_seq.nextval,
+	    (select max(posts_no) from posts),
+	    #{posts_picname},
+	    #{pic_path},
+	    #{upload_picname}
+	)
+  </insert>
+  <select id="selectAttachment" parameterType="int" resultType="attachmentVo">
+  	SELECT * FROM attachments WHERE posts_no=#{posts_no}
+  </select>
+  
+  
+</mapper>

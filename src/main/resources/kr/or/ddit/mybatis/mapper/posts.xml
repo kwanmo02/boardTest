@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="posts">
+  
+  
+  <select id="selectGetPosts" parameterType="String" resultType="postsVo">
+  	 SELECT * FROM  posts WHERE mem_id = ${mem_id}
+  </select>
+
+<!-- 게시글 페이징 조회 -->
+	<select id="getPostsPageList" parameterType="map" resultType="postsVo">
+	
+	select *
+      from
+      (select a.*, rownum rn
+      from
+      (select posts_no,posts_reg,posts_yn,(lpad('->',(level-1)*2,'-')||posts_title)as posts_title,posts_content, board_no,mem_id, posts_no2,posts_gcode
+      from posts
+      where board_no = #{board_no}
+      start with posts_no2 is null
+      connect by prior posts_no=posts_no2
+      order siblings by posts_reg desc) a)
+      WHERE RN BETWEEN(#{page}-1) * #{pageSize}+1 AND #{page}*#{pageSize}
+	  </select>
+	
+	
+
+   <select id="getPostsTotCnt" parameterType="int" resultType="int">
+  	SELECT COUNT(*) FROM posts where board_no=#{board_no}
+  </select>
+  
+  <select id="getAllPost" resultType="postsVo">
+  	SELECT * FROM posts
+  </select>
+  
+  
+  <select id="selectNoPosts" parameterType="int" resultType="postsVo">
+    select * from posts where posts_no = #{posts_no}
+  
+  </select>
+  
+  
+    <insert id="insertPost" parameterType="postsVo">
+  	INSERT INTO posts(
+  	posts_no,
+  	posts_title,
+  	posts_content,
+  	posts_reg,
+  	posts_yn, 
+  	board_no, 
+  	posts_no2, 
+  	posts_gcode, 
+  	mem_id)
+    VALUES(
+    posts_seq.nextval,
+    #{posts_title},
+    #{posts_content},
+    sysdate,
+    'false',
+    #{board_no},
+    <choose>
+      <when test="posts_no2 == 0">
+           null
+       </when>
+       <otherwise>
+         #{posts_no2}
+       </otherwise>
+   </choose>,
+   
+   <choose>
+      <when test="posts_gcode == 0">
+          posts_seq.nextval
+       </when>
+       <otherwise>
+         #{posts_gcode}
+       </otherwise>
+   </choose>
+   ,#{mem_id})
+  </insert>
+  
+  
+  <update id="updatePosts" parameterType="postsVo">
+   UPDATE posts SET posts_title = #{posts_title}, posts_content=#{posts_content} where posts_no = #{posts_no}
+  </update>
+  
+  
+  
+  <update id="deletePosts" parameterType="int">
+  	 UPDATE posts SET posts_yn = 'true' , posts_title='삭제된 게시물입니다.' where posts_no = #{posts_no}  
+  </update>
+  
+  <select id="selectTitlePost" parameterType="String" resultType="postsVo">
+  	 SELECT * FROM posts WHERE posts_title = #{posts_title}
+  
+  </select>
+  
+  
+  
+</mapper>
