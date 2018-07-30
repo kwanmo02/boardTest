@@ -12,7 +12,7 @@ import kr.or.ddit.mybatis.SqlmapSessionFactory;
 public class BoardDao implements BoardDaoInf{
 	private SqlSessionFactory sqlSessionFactory = SqlmapSessionFactory.getSqlSessionFactory();
 	
-	
+	  
 	@Override
 	public List<BoardVo> selectAllBoard() {
 		SqlSession session =  sqlSessionFactory.openSession();
